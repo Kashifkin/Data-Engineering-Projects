@@ -1,0 +1,29 @@
+import dlt
+from pyspark.sql.functions import *
+
+@dlt.view(
+    name = "product_transformation"
+)
+def sales_stg_transformation():
+    df = spark.readStream.table("products_stage")
+    df = df.withColumn("product_name",upper(col("product_name")))
+    return df
+
+dlt.create_streaming_table(
+    name = "products_enr"
+)
+
+dlt.create_auto_cdc_flow(
+    target = "products_enr",
+    source = "product_transformation",
+    keys = ["product_id"],
+    sequence_by = "last_updated",
+    ignore_null_updates = False,
+    apply_as_deletes = None,
+    apply_as_truncates = None,
+    column_list = None,
+    except_column_list = None,
+    stored_as_scd_type = 1,
+    track_history_column_list = None,
+    track_history_except_column_list = None
+)

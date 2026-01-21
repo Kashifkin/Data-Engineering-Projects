@@ -1,0 +1,28 @@
+import dlt
+from pyspark.sql.functions import sum
+
+@dlt.create_table(
+    name="Business_Table"
+)
+def Business_Table():
+    df_sales = spark.read.table("dim_sales")
+    df_pro = spark.read.table("dim_product")
+    df_cust = spark.read.table("dim_customers")
+
+    df_join = df_sales.join(
+        df_cust,
+        df_sales.customer_id == df_cust.customer_id,
+        "inner"
+    ).join(
+        df_pro,
+        df_sales.product_id == df_pro.product_id,
+        "inner"
+    )
+
+    df_prun = df_join.select("region", "category", "amount")
+
+    df_agg = df_prun.groupBy("region", "category").agg(
+        sum("amount").alias("total_sales")
+    )
+
+    return df_agg

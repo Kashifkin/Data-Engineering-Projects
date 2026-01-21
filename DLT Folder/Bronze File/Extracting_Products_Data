@@ -1,0 +1,11 @@
+import dlt
+
+product_rules = {
+    "rule_1": "product_id IS NOT NULL",
+    "rule_2": "price > 0"
+}
+
+@dlt.expect_all_or_drop(product_rules)
+@dlt.table(name="Products_Stage")
+def Products_Stage():
+    return spark.readStream.table("pyspark.source.products")
