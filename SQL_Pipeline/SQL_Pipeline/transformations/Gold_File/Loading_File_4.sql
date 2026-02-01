@@ -1,0 +1,3 @@
+CREATE OR REFRESH LIVE TABLE gold_table_4
+AS
+SELECT * FROM silver_table_4

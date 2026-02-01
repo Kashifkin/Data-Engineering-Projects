@@ -1,0 +1,106 @@
+CREATE TABLE departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(50),
+    location VARCHAR(50)
+);
+
+
+INSERT INTO departments VALUES
+(1, 'IT', 'Lahore'),
+(2, 'HR', 'Karachi'),
+(3, 'Finance', 'Islamabad'),
+(4, 'Sales', 'Karachi'),
+(5, 'Operations', 'Lahore');
+
+
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    full_name VARCHAR(100),
+    gender VARCHAR(10),
+    age INT,
+    department_id INT,
+    job_title VARCHAR(50),
+    hire_date DATE,
+    FOREIGN KEY (department_id) REFERENCES departments(department_id)
+);
+
+
+INSERT INTO employees VALUES
+(1, 'Ali Khan', 'Male', 25, 1, 'Junior Developer', '2022-01-10'),
+(2, 'Sara Ahmed', 'Female', 28, 2, 'HR Officer', '2021-03-15'),
+(3, 'Usman Raza', 'Male', 32, 3, 'Accountant', '2020-06-01'),
+(4, 'Ayesha Malik', 'Female', 24, 1, 'Software Intern', '2023-02-20'),
+(5, 'Hamza Ali', 'Male', 30, 4, 'Sales Executive', '2019-09-10'),
+(6, 'Zainab Noor', 'Female', 27, 1, 'Backend Developer', '2021-11-05'),
+(7, 'Bilal Ahmad', 'Male', 35, 5, 'Operations Manager', '2018-04-01'),
+(8, 'Hira Sheikh', 'Female', 26, 4, 'Sales Analyst', '2022-07-18'),
+(9, 'Danish Iqbal', 'Male', 29, 3, 'Finance Analyst', '2021-01-12'),
+(10, 'Iqra Khan', 'Female', 23, 2, 'HR Assistant', '2023-06-01'),
+(11, 'Ammar Farooq', 'Male', 31, 1, 'Frontend Developer', '2020-10-10'),
+(12, 'Sadia Yousaf', 'Female', 34, 5, 'Operations Lead', '2017-05-25'),
+(13, 'Saad Ahmed', 'Male', 28, 4, 'Sales Executive', '2021-08-08'),
+(14, 'Maham Javed', 'Female', 25, 3, 'Accounts Officer', '2022-09-01'),
+(15, 'Fahad Khan', 'Male', 37, 1, 'Tech Lead', '2016-02-14'),
+(16, 'Noor Fatima', 'Female', 29, 2, 'HR Manager', '2019-12-03'),
+(17, 'Shahzaib Ali', 'Male', 33, 5, 'Supply Coordinator', '2018-06-19'),
+(18, 'Laiba Hassan', 'Female', 22, 4, 'Sales Intern', '2023-07-01'),
+(19, 'Imran Qureshi', 'Male', 41, 3, 'Finance Manager', '2015-01-01'),
+(20, 'Areeba Siddiq', 'Female', 27, 1, 'QA Engineer', '2022-04-15'),
+(21, 'Noman Riaz', 'Male', 34, 5, 'Operations Analyst', '2020-03-09'),
+(22, 'Eman Tariq', 'Female', 26, 2, 'Recruiter', '2021-09-20'),
+(23, 'Kamran Akmal', 'Male', 38, 4, 'Sales Manager', '2017-11-11'),
+(24, 'Anum Saleem', 'Female', 24, 1, 'UI/UX Designer', '2023-01-17'),
+(25, 'Rizwan Haider', 'Male', 29, 3, 'Tax Consultant', '2022-05-06'),
+(26, 'Saba Iftikhar', 'Female', 31, 2, 'HR Business Partner', '2019-08-14'),
+(27, 'Talha Mehmood', 'Male', 27, 1, 'Data Analyst', '2021-04-22'),
+(28, 'Kiran Shah', 'Female', 35, 5, 'Operations Supervisor', '2018-10-30'),
+(29, 'Zubair Ahmed', 'Male', 42, 4, 'Regional Sales Head', '2014-03-03'),
+(30, 'Hina Aslam', 'Female', 28, 3, 'Budget Analyst', '2020-12-12');
+
+
+
+CREATE TABLE salaries (
+    salary_id INT PRIMARY KEY,
+    employee_id INT,
+    salary_amount DECIMAL(10,2),
+    bonus DECIMAL(10,2),
+    performance_rating INT,
+    last_increment_date DATE,
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+);
+
+
+
+INSERT INTO salaries VALUES
+(1, 1, 60000, 5000, 3, '2023-01-01'),
+(2, 2, 55000, 4000, 4, '2022-12-01'),
+(3, 3, 85000, 8000, 4, '2022-10-15'),
+(4, 4, 35000, 2000, 3, '2023-06-01'),
+(5, 5, 65000, 7000, 4, '2023-02-10'),
+(6, 6, 90000, 9000, 5, '2023-01-20'),
+(7, 7, 120000, 15000, 5, '2022-09-01'),
+(8, 8, 70000, 6000, 4, '2023-03-12'),
+(9, 9, 80000, 7500, 4, '2022-11-05'),
+(10, 10, 40000, 1500, 3, '2023-07-01'),
+(11, 11, 95000, 8500, 5, '2022-12-10'),
+(12, 12, 130000, 20000, 5, '2022-06-01'),
+(13, 13, 68000, 6000, 4, '2023-04-10'),
+(14, 14, 72000, 5000, 3, '2023-05-01'),
+(15, 15, 150000, 25000, 5, '2022-01-01'),
+(16, 16, 110000, 12000, 5, '2022-08-15'),
+(17, 17, 78000, 6500, 4, '2023-02-01'),
+(18, 18, 30000, 1000, 2, '2023-07-01'),
+(19, 19, 160000, 30000, 5, '2022-03-01'),
+(20, 20, 70000, 5000, 4, '2023-03-15'),
+(21, 21, 82000, 7000, 4, '2022-10-01'),
+(22, 22, 60000, 4000, 3, '2023-01-10'),
+(23, 23, 140000, 22000, 5, '2022-05-20'),
+(24, 24, 45000, 3000, 3, '2023-06-15'),
+(25, 25, 88000, 7500, 4, '2023-02-18'),
+(26, 26, 105000, 10000, 5, '2022-09-10'),
+(27, 27, 75000, 6000, 4, '2023-01-25'),
+(28, 28, 115000, 14000, 5, '2022-11-01'),
+(29, 29, 180000, 35000, 5, '2022-02-01'),
+(30, 30, 90000, 8000, 4, '2022-12-20');
+
+
