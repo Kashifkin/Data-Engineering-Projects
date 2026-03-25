@@ -1,3 +1,7 @@
+----Extracting CSV File into Database
+
+Create DATABASE project;
+
 
 --CREATE RAW TABLE (SALES)
 
