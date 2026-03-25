@@ -1,0 +1,234 @@
+
+--CREATE RAW TABLE (SALES)
+
+
+CREATE TABLE sales (
+    order_id        VARCHAR(20),
+    amount          NUMERIC(10, 2),
+    profit          NUMERIC(10, 2),
+    quantity        INTEGER,
+    category        VARCHAR(50),
+    sub_category    VARCHAR(50),
+    payment_mode    VARCHAR(30),
+    order_date      VARCHAR(20),
+    customer_name   VARCHAR(100),
+    state           VARCHAR(50),
+    city            VARCHAR(50),
+    year_month      VARCHAR(10)
+);
+
+
+--BRONZE LAYER (RAW COPY)
+
+
+CREATE TABLE bronze_table 
+AS
+SELECT * FROM sales;
+
+
+--SILVER LAYER (CLEANED DATA)
+
+
+CREATE TABLE silver_table 
+AS
+SELECT 
+    order_id,
+    COALESCE(amount, 0) AS amount,
+    COALESCE(profit, 0) AS profit,
+    COALESCE(quantity, 0) AS quantity,
+	COALESCE(category, 'Unknown') AS category,
+    COALESCE(sub_category, 'Unknown') AS sub_category,
+    COALESCE(payment_mode, 'Unknown') AS payment_mode,
+    COALESCE(order_date, '2000-01-01')::DATE AS order_date,
+	COALESCE(customer_name, 'Unknown') AS customer_name,
+    COALESCE(state, 'Unknown') AS state,
+    COALESCE(city, 'Unknown') AS city,
+    COALESCE(year_month, 'Unknown') AS year_month,
+    (COALESCE(amount,0) * COALESCE(quantity,0)) AS total_revenue,
+    CASE 
+        WHEN quantity = 1 THEN 'Single'
+        WHEN quantity BETWEEN 2 AND 4 THEN 'Small'
+        WHEN quantity BETWEEN 5 AND 9 THEN 'Medium'
+        WHEN quantity >= 10 THEN 'Bulk'
+        ELSE 'Unknown'
+    END AS order_size
+FROM bronze_table;
+
+
+--INDEXING (PERFORMANCE)
+
+
+CREATE INDEX idx_silver_customer 
+ON silver_table(customer_name, state, city);
+
+CREATE INDEX idx_silver_product 
+ON silver_table(category, sub_category);
+
+CREATE INDEX idx_silver_payment 
+ON silver_table(payment_mode);
+
+CREATE INDEX idx_silver_date 
+ON silver_table(order_date);
+
+
+--DIMENSION TABLES
+
+
+-- Customer Dimension
+CREATE TABLE dim_customer 
+AS
+SELECT DISTINCT
+    ROW_NUMBER() OVER() AS customer_id,
+    customer_name,
+    state,
+    city
+FROM silver_table;
+
+CREATE INDEX idx_dim_customer 
+ON dim_customer(customer_name, state, city);
+
+
+-- Product Dimension
+CREATE TABLE dim_product 
+AS
+SELECT DISTINCT
+    ROW_NUMBER() OVER() AS product_id,
+    category,
+    sub_category
+FROM silver_table;
+
+CREATE INDEX idx_dim_product 
+ON dim_product(category, sub_category);
+
+
+-- Payment Dimension
+CREATE TABLE dim_payment
+AS
+SELECT DISTINCT
+    ROW_NUMBER() OVER() AS payment_id,
+    payment_mode
+FROM silver_table;
+
+CREATE INDEX idx_dim_payment 
+ON dim_payment(payment_mode);
+
+
+-- Date Dimension
+CREATE TABLE dim_date 
+AS
+SELECT DISTINCT
+    ROW_NUMBER() OVER() AS date_id,
+    order_date,
+    EXTRACT(YEAR FROM order_date) AS year,
+    EXTRACT(MONTH FROM order_date) AS month,
+    EXTRACT(DAY FROM order_date) AS day,
+    TO_CHAR(order_date, 'Month') AS month_name,
+    TO_CHAR(order_date, 'Day') AS day_name
+FROM silver_table;
+
+CREATE INDEX idx_dim_date 
+ON dim_date(order_date);
+
+
+--FACT TABLE (STAR SCHEMA)
+
+
+CREATE TABLE fact_sales 
+AS
+SELECT
+    s.order_id,
+    dc.customer_id,
+    dp.product_id,
+    dpm.payment_id,
+    dd.date_id,
+    s.amount,
+    s.profit,
+    s.quantity,
+    s.total_revenue,
+    s.order_size
+FROM silver_table s
+LEFT JOIN dim_customer dc 
+    ON s.customer_name = dc.customer_name
+    AND s.state = dc.state
+    AND s.city = dc.city
+LEFT JOIN dim_product dp  
+    ON s.category = dp.category
+    AND s.sub_category = dp.sub_category
+LEFT JOIN dim_payment dpm 
+    ON s.payment_mode = dpm.payment_mode
+LEFT JOIN dim_date dd     
+    ON s.order_date = dd.order_date;
+
+
+--BUSINESS QUERIES (ANALYTICS)
+
+
+
+-- 1. Total Revenue by Category
+SELECT 
+    dp.category,
+    SUM(f.total_revenue) AS total_revenue
+FROM fact_sales f
+JOIN dim_product dp ON f.product_id = dp.product_id
+GROUP BY dp.category
+ORDER BY total_revenue DESC;
+
+
+-- 2. Top 5 Customers by Revenue
+SELECT 
+    dc.customer_name,
+    SUM(f.total_revenue) AS revenue
+FROM fact_sales f
+JOIN dim_customer dc ON f.customer_id = dc.customer_id
+GROUP BY dc.customer_name
+ORDER BY revenue DESC
+LIMIT 5;
+
+
+-- 3. Monthly Sales Trend
+SELECT 
+    dd.year,
+    dd.month,
+    SUM(f.total_revenue) AS monthly_revenue
+FROM fact_sales f
+JOIN dim_date dd ON f.date_id = dd.date_id
+GROUP BY dd.year, dd.month
+ORDER BY dd.year, dd.month;
+
+
+-- 4. Profit by Payment Mode
+SELECT 
+    dpm.payment_mode,
+    SUM(f.profit) AS total_profit
+FROM fact_sales f
+JOIN dim_payment dpm ON f.payment_id = dpm.payment_id
+GROUP BY dpm.payment_mode
+ORDER BY total_profit DESC;
+
+
+-- 5. Order Size Distribution
+SELECT 
+    order_size,
+    COUNT(*) AS total_orders
+FROM fact_sales
+GROUP BY order_size
+ORDER BY total_orders DESC;
+
+
+-- 6. Top Performing Cities
+SELECT 
+    dc.city,
+    SUM(f.total_revenue) AS revenue
+FROM fact_sales f
+JOIN dim_customer dc ON f.customer_id = dc.customer_id
+GROUP BY dc.city
+ORDER BY revenue DESC
+LIMIT 5;
+
+
+-- 7. Average Order Value
+SELECT 
+    AVG(total_revenue) AS avg_order_value
+FROM fact_sales;
+
+
