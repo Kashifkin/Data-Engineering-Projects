@@ -2,7 +2,7 @@
 
 CREATE DATABASE University_Management_System;
 
-USE university_management_system;
+
 
 -- CREATING TABLES
 

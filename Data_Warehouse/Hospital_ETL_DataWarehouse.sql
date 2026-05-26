@@ -1,13 +1,9 @@
--
+
 -- HOSPITAL MANAGEMENT DATA WAREHOUSE PROJECT
--- Complete ETL Pipeline (Bronze → Silver → Gold)
-
-
 
 -- 1. CREATE DATABASE
 
 CREATE DATABASE IF NOT EXISTS Hospital_Management;
-USE Hospital_Management;
 
 
 
