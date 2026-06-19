@@ -1,3 +1,0 @@
-CREATE OR REFRESH LIVE TABLE gold_table_3
-AS
-SELECT * FROM silver_table_3
