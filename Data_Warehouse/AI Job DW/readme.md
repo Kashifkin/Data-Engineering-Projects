@@ -1,12 +1,12 @@
 # AI Job Market Data Warehouse
 
-## # Project Overview
+##  Project Overview
 
 This project focuses on building a **Data Warehouse for AI Job Market data** using a **Star Schema**.
 
 The main objective is to transform raw job-market data into a structured data warehouse that can be used for reporting, analysis, and business insights.
 
-## # Data Warehouse Architecture
+##  Data Warehouse Architecture
 
 The project follows a **Star Schema** consisting of:
 
@@ -18,7 +18,7 @@ The project follows a **Star Schema** consisting of:
 
 The fact table contains measurable information, while dimension tables contain descriptive information used for analysis.
 
-## # Data Warehouse Process
+##  Data Warehouse Process
 
 **Raw Data → Data Cleaning → Dimension Tables → Fact Table → Business Analysis**
 
@@ -32,7 +32,7 @@ The project includes:
 * Establishing relationships using foreign keys
 * Performing analytical queries
 
-## # Technologies Used
+##  Technologies Used
 
 * Python
 * Pandas
@@ -42,7 +42,7 @@ The project includes:
 * pgAdmin
 * Star Schema
 
-## # Business Analysis
+##  Business Analysis
 
 The warehouse can be used to analyze:
 
@@ -57,7 +57,7 @@ The warehouse can be used to analyze:
 * Employee experience
 * Company information
 
-## # Key Learning
+##  Key Learning
 
 This project helped me practice:
 
@@ -72,7 +72,7 @@ This project helped me practice:
 * PostgreSQL
 * Data transformation using Python
 
-## # Project Structure
+##  Project Structure
 
 ```text
 AI-Job-Market-Data-Warehouse/
